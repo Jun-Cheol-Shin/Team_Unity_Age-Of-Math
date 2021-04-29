@@ -69,41 +69,44 @@
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/77636255/116549471-7caa6c00-a930-11eb-9b46-4fcd7d2270d7.gif)
 + Slerp 함수를 이용해 포물선을 그리며 이동하도록 구현
 ```
-            // 클릭한 위치와 본인의 위치가 같을 경우 함수 탈출
-            if (GameManager.Nowposobj.transform.localPosition ==
-                MatrixManager.Maps[y][x].transform.localPosition)
-            {
-                return;
-            }
+    // 클릭한 위치와 본인의 위치가 같을 경우 함수 탈출
+    if (GameManager.Nowposobj.transform.localPosition ==
+        MatrixManager.Maps[y][x].transform.localPosition)
+    {
+        return true;
+    }
 
-            // Sleap 구현을 위해 출발점과 도착점의 센터점을 지정
-            Vector3 RelCenter = GameManager.Nowposobj.transform.localPosition - center;
-            Vector3 aimRelCenter = MatrixManager.Maps[y][x].transform.localPosition - center;
+    // Sleap 구현을 위해 출발점과 도착점의 센터점을 지정
+    // 윗줄에서 center 선언
+    // Vector3 center = (GameManager.Nowposobj.transform.localPosition + MatrixManager.Maps[y][x].transform.localPosition) * 0.5f;
 
-            // 처음 한번만 divide와 startTime을 지정
-            if (divide == 0)
-            {
-                divide = Vector3.Distance(
-                    GameManager.Nowposobj.transform.localPosition,
-                    MatrixManager.Maps[y][x].transform.localPosition) * 0.2f;
-                startTime = Time.time;
-            }
+    Vector3 RelCenter = GameManager.Nowposobj.transform.localPosition - center;
+    Vector3 aimRelCenter = MatrixManager.Maps[y][x].transform.localPosition - center;
 
-            // divide가 클 수록 천천히 증가
-            float fracComplete = (Time.time - startTime) / divide;
-            // 최소 최대 지정
-            Mathf.Clamp(fracComplete, 0, 1);
+    // 처음 한번만 divide와 startTime을 지정해 Time.time이 늘어나면서 fracComplete 변수가 1이 될 때까지 실행(도착 까지)
+    if (divide == 0)
+    {
+        divide = Vector3.Distance(
+            GameManager.Nowposobj.transform.localPosition,
+            MatrixManager.Maps[y][x].transform.localPosition) * 0.2f;
+        startTime = Time.time;
+    }
 
-            if (fracComplete != 0)
-            {
-                GameManager.mychar.transform.localPosition = Vector3.Slerp(RelCenter, aimRelCenter, fracComplete);
-                GameManager.mychar.transform.localPosition += center;
-            }
+    // divide가 클 수록 천천히 증가
+    float fracComplete = (Time.time - startTime) / divide;
+    // 최소 최대 지정
+    Mathf.Clamp(fracComplete, 0, 1);
 
-            // 도착하면 divide 초기화
-            if (GameManager.mychar.transform.localPosition ==
-                MatrixManager.Maps[y][x].transform.localPosition)
-            {
-                divide = 0;
-            }
+    if (fracComplete != 0)
+    {
+        GameManager.mychar.transform.localPosition = Vector3.Slerp(RelCenter, aimRelCenter, fracComplete);
+        GameManager.mychar.transform.localPosition += center;
+    }
+
+    // 도착하면 divide 초기화
+    if (GameManager.mychar.transform.localPosition ==
+        MatrixManager.Maps[y][x].transform.localPosition)
+    {
+        divide = 0;
+    }
 ```
