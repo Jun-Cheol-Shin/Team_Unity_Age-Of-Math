@@ -67,7 +67,7 @@
 ```
 ## 이동 구현
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/77636255/116549471-7caa6c00-a930-11eb-9b46-4fcd7d2270d7.gif)
-+ 캐릭터의 이동(점프)은 원의 호를 그리며 점프하도록 표현하기 위해 Slerp 함수로 이동경로가 원호를 그리도록 구현
++ Slerp 함수를 이용해 포물선을 그리며 이동하도록 구현
 ```
             // 클릭한 위치와 본인의 위치가 같을 경우 함수 탈출
             if (GameManager.Nowposobj.transform.localPosition ==
