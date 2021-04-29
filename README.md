@@ -190,18 +190,18 @@ foreach (int number in PossibleNum)
         {
             if (number == MatrixManager.MapMatrix[j][k])
             {
-                PossibleAllMatrix[pam_count++] = MatrixManager.Maps[j][k];
+                 PossibleAllMatrix.Add(MatrixManager.Maps[j][k]);
             }
         }
     }
 }
 ```
-4. 내가 이동하려는 블록이 배열에 있는지 확인
+4. 내가 이동하려는 블록이 이동 가능한지 
 ```
-// 내가 이동하려 하는 땅이 배열에 있는 경우..
-for(int i = 0; i < pam_count; i++)
+// 내가 이동하려 하는 땅이 이동 가능한 땅인지 확인
+foreach (GameObject Block in PossibleAllMatrix)
 {
-    if(PossibleAllMatrix[i] == hit.collider.transform.parent.gameObject)
+    if (Block == hit.collider.transform.parent.gameObject)
     {
         return true;
     }
