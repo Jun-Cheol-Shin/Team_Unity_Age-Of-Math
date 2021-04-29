@@ -30,7 +30,7 @@
 ![캡처2](https://user-images.githubusercontent.com/58795584/100980553-bd23da80-3588-11eb-8f40-41b220425566.PNG)
 
 ## 캐릭터 소개
-### 캐릭터 및 스킬 소개
+### 캐릭터 소개
 + 캐릭터는 총 3명으로, 중복해서 선택이 불가합니다. 만약 중복 선택 시 서로 매칭이 되지 않습니다.
 + 캐릭터들은 각각의 고유 스킬을 가지고 있습니다.
 + 콤보 시스템이 존재합니다. 문제를 연속으로 맞출 경우 스택이 쌓이는데 3,6,9문제를 맞출 때 스킬이 발동합니다.
@@ -46,7 +46,7 @@
 -------|-------|-------|-------
 <img src="https://user-images.githubusercontent.com/58795584/100983788-27d71500-358d-11eb-8c6e-387ede8b2559.png"  width="50"> | <img src="https://user-images.githubusercontent.com/58795584/100983821-3291aa00-358d-11eb-8b1f-f9e2351b3f26.png"  width="50"> | <img src="https://user-images.githubusercontent.com/58795584/100983863-3e7d6c00-358d-11eb-9f29-22851d2fe79c.png"  width="50"> | <img src="https://user-images.githubusercontent.com/58795584/100983919-51903c00-358d-11eb-8836-edd9d7c871ff.png"  width="50">
 
-#### 각 종족들의 고유 스킬입니다.
+### 캐릭터 고유 스킬 소개
 #### 불 종족 스킬 : 맵의 중간부분에 불을 질러 상대방이 넘어오지 못하도록 합니다.
 <img src="https://user-images.githubusercontent.com/58795584/100992460-8c976d00-3597-11eb-9b70-d16606c523d0.PNG">
 
