@@ -45,6 +45,7 @@
 
 #### 풀 종족 스킬: 다음 이동하는 땅을 3번까지 문제 풀이없이 소유할 수 있습니다.
 <img src="https://user-images.githubusercontent.com/58795584/101013723-118a8280-35a8-11eb-8cd3-d8cccc015144.gif">
+
 -------
 # 구현 설명
 ## 맵 구현
