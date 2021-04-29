@@ -39,9 +39,11 @@
 #### 각 종족들의 고유 스킬입니다.
 #### 불 종족 스킬 : 맵의 중간부분에 불을 질러 상대방이 넘어오지 못하도록 합니다.
 <img src="https://user-images.githubusercontent.com/58795584/100992460-8c976d00-3597-11eb-9b70-d16606c523d0.PNG">
+
 #### 물 종족 스킬: 5초간 상대가 이동 할 수 없도록 합니다.
 <img src="https://user-images.githubusercontent.com/58795584/101012902-d63b8400-35a6-11eb-91d3-dcb29870c24f.PNG">
-#### 풀 종족 : 다음 이동하는 땅을 3번까지 문제 풀이없이 소유할 수 있습니다.
+
+#### 풀 종족 스킬: 다음 이동하는 땅을 3번까지 문제 풀이없이 소유할 수 있습니다.
 <img src="https://user-images.githubusercontent.com/58795584/101013723-118a8280-35a8-11eb-8cd3-d8cccc015144.gif">
 -------
 # 구현 설명
