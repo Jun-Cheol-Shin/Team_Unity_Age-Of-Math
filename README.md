@@ -245,7 +245,7 @@ public void Jump(ushort _player, ulong _x, ulong _y)
 }
 ```
 4. 코루틴을 이용해 이동을 실행
-### 이동 도중 패킷이 오더라도 이동이 중단되지 않고 새로운 코루틴을 실행하기 때문에 멀티 스레드의 효과를 볼 수 있다.
+#### 이동 중 패킷이 오더라도 이동이 중단되지 않고 새로운 코루틴을 실행하기 때문에 멀티 스레드의 효과를 볼 수 있다.
 ```
 IEnumerator MoveCoroutine(ulong x, ulong y, ushort player)
 {
