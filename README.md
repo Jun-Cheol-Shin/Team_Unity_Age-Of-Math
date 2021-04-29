@@ -134,23 +134,25 @@
 
 1. 현재 캐릭터가 밟고 있는 영역의 숫자를 가져온다 (ex) BlockNum = (1 ~ 100 or 200)
 ```c#
-  // 현재 캐릭터가 서 있는 블록의 넘버를 가져온다.
+// 현재 캐릭터가 서 있는 블록의 넘버를 가져온다.
 for(int i = 0; i < MatrixManager.arr_height; i++)
 {
+    bool flag = false;
     for(int j = 0; j < MatrixManager.arr_width; j++)
     {
         if(GameManager.Nowposobj == MatrixManager.Maps[i][j])
         {
             BlockNum = MatrixManager.MapMatrix[i][j];
-            break;
+            flag = true;
         }
+        if (flag) break;
     }
+    if (flag) break;
 }
 ```
-2. 탐색을 통해 밟을 수 있는 영역의 번호를 배열에 삽입해 보관한다.
+2. 탐색을 통해 밟을 수 있는 영역의 번호를 HashSet에 삽입해 보관한다. (현재 있는 ㄴ 블록에서 상하좌우로 탐색)
 ```
 // 현재 캐릭터의 영역 주위 상하좌우에 있는 영역의 넘버를 배열로 받아온다.
-// (자신이 있는 영역의 바로 옆에 있는 영역만을 이동 할 수 있다)
 for(int i = 0; i < MatrixManager.arr_height; i++)
 {
     for(int j = 0; j < MatrixManager.arr_width; j++)
@@ -159,34 +161,34 @@ for(int i = 0; i < MatrixManager.arr_height; i++)
         {
             if(i != MatrixManager.arr_height - 1)
             {
-                PossibleNum[pn_count++] = MatrixManager.MapMatrix[i + 1][j];
+                PossibleNum.Add(MatrixManager.MapMatrix[i + 1][j]);
             }
             if(i != 0)
             {
-                PossibleNum[pn_count++] = MatrixManager.MapMatrix[i - 1][j];
+                PossibleNum.Add(MatrixManager.MapMatrix[i - 1][j]);
             }
             if(j != MatrixManager.arr_width - 1)
             {
-                PossibleNum[pn_count++] = MatrixManager.MapMatrix[i][j + 1];
+                PossibleNum.Add(MatrixManager.MapMatrix[i][j + 1]);
             }
             if(j != 0)
             {
-                PossibleNum[pn_count++] = MatrixManager.MapMatrix[i][j - 1];
+                PossibleNum.Add(MatrixManager.MapMatrix[i][j - 1]);
             }
         }
     }
 }
 ```
-3. 2의 배열을 이용해 밟을 수 있는 모든 오브젝트를 찾는다.(영역)
+3. HashSet을 이용해 밟을 수 있는 모든 오브젝트를 찾는다.(영역)
 ```
 // 밟을 수 있는 땅의 넘버인 땅 오브젝트를 모두 배열에 넣는다.
-for (int i = 0; i < pn_count; i++)
+foreach (int number in PossibleNum)
 {
     for(int j = 0; j < MatrixManager.arr_height; j++)
     {
-        for(int k = 0; k < MatrixManager.arr_width; k++)
+        for (int k = 0; k < MatrixManager.arr_width; k++)
         {
-            if(PossibleNum[i] == MatrixManager.MapMatrix[j][k])
+            if (number == MatrixManager.MapMatrix[j][k])
             {
                 PossibleAllMatrix[pam_count++] = MatrixManager.Maps[j][k];
             }
