@@ -37,17 +37,12 @@
 <img src="https://user-images.githubusercontent.com/58795584/100983788-27d71500-358d-11eb-8c6e-387ede8b2559.png"  width="50"> | <img src="https://user-images.githubusercontent.com/58795584/100983821-3291aa00-358d-11eb-8b1f-f9e2351b3f26.png"  width="50"> | <img src="https://user-images.githubusercontent.com/58795584/100983863-3e7d6c00-358d-11eb-9f29-22851d2fe79c.png"  width="50"> | <img src="https://user-images.githubusercontent.com/58795584/100983919-51903c00-358d-11eb-8836-edd9d7c871ff.png"  width="50">
 
 #### 각 종족들의 고유 스킬입니다.
-<img src="https://user-images.githubusercontent.com/58795584/100992460-8c976d00-3597-11eb-9b70-d16606c523d0.PNG">
-
 #### 불 종족 스킬 : 맵의 중간부분에 불을 질러 상대방이 넘어오지 못하도록 합니다.
-
-<img src="https://user-images.githubusercontent.com/58795584/101012902-d63b8400-35a6-11eb-91d3-dcb29870c24f.PNG">
-
+<img src="https://user-images.githubusercontent.com/58795584/100992460-8c976d00-3597-11eb-9b70-d16606c523d0.PNG">
 #### 물 종족 스킬: 5초간 상대가 이동 할 수 없도록 합니다.
-
-<img src="https://user-images.githubusercontent.com/58795584/101013723-118a8280-35a8-11eb-8cd3-d8cccc015144.gif">
-
+<img src="https://user-images.githubusercontent.com/58795584/101012902-d63b8400-35a6-11eb-91d3-dcb29870c24f.PNG">
 #### 풀 종족 : 다음 이동하는 땅을 3번까지 문제 풀이없이 소유할 수 있습니다.
+<img src="https://user-images.githubusercontent.com/58795584/101013723-118a8280-35a8-11eb-8cd3-d8cccc015144.gif">
 -------
 # 구현 설명
 ## 맵 구현
@@ -67,7 +62,7 @@
                 .
                 .
 ```
-## ⓑ. 이동 구현
+## 이동 구현
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/77636255/116549471-7caa6c00-a930-11eb-9b46-4fcd7d2270d7.gif)
 + 캐릭터의 이동(점프)은 원의 호를 그리며 점프하도록 표현하기 위해 Slerp 함수로 이동경로가 원호를 그리도록 구현
 ```
@@ -109,63 +104,3 @@
                 divide = 0;
             }
 ```
-## ⓒ. 이동 검출 후 서버에 보내는 작업
-+ 이동할 수 있는 땅을 검출하여 이동이 가능하다면 서버에 위치값을 보내는 작업입니다.
-```
-  for(int i = 0; i < MatrixManager.arr_height; i++)
-        {
-            for(int j = 0; j < MatrixManager.arr_width; j++)
-            {
-                // 내가 클릭한 것과 일치하며 장애물이 아닐 때
-                if(MatrixManager.Maps[i][j] == hit.collider.transform.parent.gameObject && MatrixManager.MapMatrix[i][j] != -1)
-                {
-                    // 내 소유지 이거나 검출 함수의 true일 경우
-                    if(MatrixManager.MapMatrix[i][j] / 100 == 1 || MatrixSelection(hit))
-                    {
-                        // 물 종족, 불 종족의 이동 방해 스킬에 영향을 받지 않는가?
-                        if (Skill_Check(j))
-                        {
-                            // 현재 오브젝트가 내 캐릭터인가?
-                            if (this.gameObject == GameManager.mychar)
-                            {
-                                last_x = j;
-                                // 서버에 보낸다.
-                                Sender.Send_Tile_Access((ulong)j, (ulong)i);
-                                //Debug.LogFormat("서버에 보낸다 " + i + "," + j + this.transform.gameObject.name);
-                                y = i;
-                                x = j;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-```
-## ⓓ. 서버에서 받아와 실제 이동하는 작업
-+ 서버에서는 클라이언트에게 위치를 받아 다시 클라이언트에게 본인의 이동할 위치와 상대방의 위치를 보냅니다.
-+ 클라이언트는 ulong형 숫자를 받아와 본인의 캐릭터와 상대의 캐릭터를 동시에 움직이도록 합니다.
-+ 한 클라이언트에 2명의 위치값을 보내 총 4개의 캐릭터를 움직이도록 합니다.
-```
-  private void Start()
-    {
-        Manager_Network.Instance.e_Player_Move.AddListener(new UnityAction<ushort, ulong, ulong>(Jump));
-    }
-```
-#### Start 함수에 서버에게 AddListner를 이용하여 함수를 보낸 뒤 서버에서 호출 할 수 있도록 합니다.
-```
-   GameManager.Nowposobj = MatrixManager.Maps[y][x];
-                GameManager.Nowpos = new Vector3(GameManager.Nowposobj.transform.localPosition.x,
-                    GameManager.Nowposobj.transform.localPosition.y, GameManager.Nowposobj.transform.localPosition.z);
-```
-#### 게임를 관리하는 매니저가 현 플레이어의 위치를 알게끔 합니다.
-```
-  GameManager.Nowotherobj = MatrixManager.Maps[y][x];
-                GameManager.Nowotherpos = new Vector3(GameManager.Nowotherobj.transform.localPosition.x,
-                    GameManager.Nowotherobj.transform.localPosition.y, GameManager.Nowotherobj.transform.localPosition.z);
-```
-#### 상대 캐릭터 역시 포지션값을 받아와 입력합니다.
--------
-# 3. 구현하면서...
-+ 유니티를 배우면서 처음으로 팀 프로젝트로 작업한 게임입니다.
-+ 서버와 클라이언트의 동기화가 힘들었습니다..
-+ 이동 검출의 자세한 코드를 보고싶다면 PlayerFunction.cs 파일의 Move_tile()의 함수를 참고해주세요.
