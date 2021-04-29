@@ -7,8 +7,8 @@
 + **개발 기간** : 2주일
 + **담당** : 클라이언트
 -------
-# 1. 게임 소개
-## ⓐ 게임 규칙
+# 게임 소개
+## 게임 규칙
 + **1분**의 시간이 주어지며, 맵은 **총 13개**의 테트로미노 조각들로 구성되어 있고 조각당 산수 문제 하나씩 존재한다.
 + 문제를 먼저 푼 플레이어가 해당 땅의 주인이 되며 땅의 색깔이 바뀝니다.
 + 이미 소유권이 넘어간 문제를 다시 풀 수 있으며 땅의 소유권은 문제를 푼 플레이어의 소유로 넘어가게 됩니다.
@@ -16,11 +16,11 @@
 + 캐릭터의 이동은 캐릭터의 소유 땅과 근접해 있는 땅으로만 이동할 수 있습니다.
 + 게임 시작 초반에 주어지는 첫 소유지는 상대방이 접근 불가능하고 뺏을 수도 없습니다.
 
-### * 맵 구조
+### 맵 구조
 ![캡처2](https://user-images.githubusercontent.com/58795584/100980553-bd23da80-3588-11eb-8f40-41b220425566.PNG)
 
-## ⓑ 캐릭터 소개
-### * 캐릭터 및 스킬 소개
+## 캐릭터 소개
+### 캐릭터 및 스킬 소개
 + 캐릭터는 총 3명으로, 중복해서 선택이 불가합니다. 만약 중복 선택 시 서로 매칭이 되지 않습니다.
 + 캐릭터들은 각각의 고유 스킬을 가지고 있습니다.
 + 콤보 시스템이 존재합니다. 문제를 연속으로 맞출 경우 스택이 쌓이는데 3,6,9문제를 맞출 때 스킬이 발동합니다.
@@ -49,8 +49,9 @@
 
 #### 풀 종족 : 다음 이동하는 땅을 3번까지 문제 풀이없이 소유할 수 있습니다.
 -------
-# 2. 구현 설명
-## ⓐ. 맵 구현
+# 구현 설명
+## 맵 구현
+![image](https://user-images.githubusercontent.com/77636255/116548043-a4003980-a92e-11eb-9a63-096a65cc6d8c.png)
 + 2차원 배열을 만들어 각 테트루미노 조각에 맞게 값을 설정합니다. ex) 문제1 지역 = 1, 문제2 지역 = 2....
 ```C#
         // -1 : 장애물 200 : 상대 진영  100 : 내 진영
@@ -65,28 +66,6 @@
                 .
                 .
                 .
-```
-+ 소유지가 바뀌는 것은 여러번 자꾸 바뀌기 때문에 매터리얼 변경보다는 SetActive를 이용하여 변경하였습니다.
-```
-// case (종족)에 따라 SetActive를 다르게 한다.
-        case 1:
-            Maps[i][j].transform.GetChild(0).gameObject.SetActive(true);
-            Maps[i][j].transform.GetChild(1).gameObject.SetActive(false);
-            Maps[i][j].transform.GetChild(2).gameObject.SetActive(false);
-            Maps[i][j].transform.GetChild(3).gameObject.SetActive(false);
-            break;
-        case 2:
-            Maps[i][j].transform.GetChild(0).gameObject.SetActive(false);
-            Maps[i][j].transform.GetChild(1).gameObject.SetActive(true);
-            Maps[i][j].transform.GetChild(2).gameObject.SetActive(false);
-            Maps[i][j].transform.GetChild(3).gameObject.SetActive(false);
-            break;
-        case 3:
-            Maps[i][j].transform.GetChild(0).gameObject.SetActive(false);
-            Maps[i][j].transform.GetChild(1).gameObject.SetActive(false);
-            Maps[i][j].transform.GetChild(2).gameObject.SetActive(true);
-            Maps[i][j].transform.GetChild(3).gameObject.SetActive(false);
-            break;
 ```
 ## ⓑ. 이동 구현
 + 캐릭터 이동(점프)은 본인이 위치한 테트로미노 땅에 인접한 땅만 접근이 가능하도록 구현했습니다.
