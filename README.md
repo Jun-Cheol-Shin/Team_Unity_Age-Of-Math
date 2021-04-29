@@ -210,9 +210,57 @@ foreach (GameObject Block in PossibleAllMatrix)
 -------------
 
 ## 서버 클라이언트 연동
+### 서버는 양 클라이언트에게 같은 패킷을 보낸다. (한 클라이언트가 이동 할 경우 매번 패킷을 보냄)
+### 1번 클라이언트가 이동할 경우 => 1번 클라이언트 : 내 캐릭터 이동, 2번 클라이언트 : 상대 캐릭터가 이동
+![image](https://user-images.githubusercontent.com/77636255/116575918-0e72a300-a94a-11eb-929a-eb5de6ba8160.png)
 
+1. 게임 시작 시 서버에서 자신의 번호를 받아 상대 번호를 세팅
+```
+my = Manager_Network.Instance.m_Client_CharacterIndex;
+other = Manager_Network.Instance.m_OtherPlayer_CharacterIndex;
+position = Manager_Network.Instance.m_Client_Position;
+switch (position)
+{
+    case 1:
+        other_position = 2;
+        break;
+    case 2:
+        other_position = 1;
+        break;
+}
+```
+2. AddListener를 이용해 함수를 등록하고 패킷을 받으면 등록된 함수를 실행(Jump 함수)
+```
+Manager_Network.Instance.e_Player_Move.AddListener(new UnityAction<ushort, ulong, ulong>(Jump));
+```
+3. Position과 패킷의 매개변수 player를 비교해 이동을 결정 (내 캐릭터 라면)
+```
+public void Jump(ushort _player, ulong _x, ulong _y)
+{
+        if (_player == GameManager.position)
+        {
+            Manager_Sound.Instance.Play_SE(SE_INDEX.JUMP);
+            StartCoroutine(MoveCoroutine(_x, _y, _player));
+        }
+}
+```
+4. 코루틴을 이용해 이동을 실행
+### 이동 도중 패킷이 오더라도 이동이 중단되지 않고 새로운 코루틴을 실행하기 때문에 멀티 스레드의 효과를 볼 수 있다.
+```
+IEnumerator MoveCoroutine(ulong x, ulong y, ushort player)
+{
+        // 내 캐릭터 이동 함수
+        WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+
+        // 이동 함수 이동 완료 or 번호가 틀리면 코루틴 종료
+        while(!Move_tile(x, y, player))
+        {
+            yield return waitForEndOfFrame;
+        }
+}
+```
 -------------
 
 # 어려웠던 점
-
+* 이동 도중 도착 하기 전 새로운 패킷을 받으면 이동이 끊기는 문제를 코루틴을 통해 해결
 -------------
