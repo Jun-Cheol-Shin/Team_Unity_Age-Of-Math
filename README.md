@@ -130,7 +130,23 @@
 -------------
 
 ## 이동 조건 검출 로직
+![image](https://user-images.githubusercontent.com/77636255/116559125-10813580-a93b-11eb-86a9-f769624268ff.png)\
 
+1. 현재 캐릭터가 밟고 있는 영역의 숫자를 가져온다 (ex) BlockNum = (1 ~ 100 or 200)
+```c#
+  // 현재 캐릭터가 서 있는 블록의 넘버를 가져온다.
+for(int i = 0; i < MatrixManager.arr_height; i++)
+{
+    for(int j = 0; j < MatrixManager.arr_width; j++)
+    {
+        if(GameManager.Nowposobj == MatrixManager.Maps[i][j])
+        {
+            BlockNum = MatrixManager.MapMatrix[i][j];
+            break;
+        }
+    }
+}
+```
 -------------
 
 ## 서버 클라이언트 연동
