@@ -179,31 +179,21 @@ for(int i = 0; i < MatrixManager.arr_height; i++)
     }
 }
 ```
-3. HashSet을 이용해 밟을 수 있는 모든 오브젝트를 찾는다.(영역)
+3. HashSet을 이용해 클릭한 영역과 비교
 ```
-// 밟을 수 있는 땅의 넘버인 땅 오브젝트를 모두 배열에 넣는다.
-foreach (int number in PossibleNum)
+// 클릭한 영역이 내가 갈 수 있는 영역인지 체크
+for (int i = 0; i < MatrixManager.arr_height; i++)
 {
-    for(int j = 0; j < MatrixManager.arr_height; j++)
+    for (int j = 0; j < MatrixManager.arr_width; j++)
     {
-        for (int k = 0; k < MatrixManager.arr_width; k++)
+        if(hit.collider.transform.parent.gameObject == MatrixManager.Maps[i][j])
         {
-            if (number == MatrixManager.MapMatrix[j][k])
+            foreach(int number in PossibleNum)
             {
-                 PossibleAllMatrix.Add(MatrixManager.Maps[j][k]);
+                if (MatrixManager.MapMatrix[i][j] == number) return true;
             }
+            return false;
         }
-    }
-}
-```
-4. 내가 이동하려는 블록이 이동 가능한지 
-```
-// 내가 이동하려 하는 땅이 이동 가능한 땅인지 확인
-foreach (GameObject Block in PossibleAllMatrix)
-{
-    if (Block == hit.collider.transform.parent.gameObject)
-    {
-        return true;
     }
 }
 ```
