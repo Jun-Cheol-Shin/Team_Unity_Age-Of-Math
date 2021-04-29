@@ -35,8 +35,10 @@ public class PlayerFunction : MonoBehaviour
         SyncManager = GameObject.Find("SyncManager").GetComponent<SyncManager>();
     }
 
+    //IEnumerator enumerator;
     private void Start()
     {
+        //enumerator = MoveCoroutine();
     }
 
     public void Event_Insert()
@@ -44,20 +46,36 @@ public class PlayerFunction : MonoBehaviour
         Manager_Network.Instance.e_Player_Move.AddListener(new UnityAction<ushort, ulong, ulong>(Jump));
     }
 
-    private bool moving = false;
-    private int x;
-    private int y;
-    private int player;
+    //private bool moving = false;
+    //private int x;
+    //private int y;
+    //private int player;
     private float t;
+
     public void Jump(ushort _player, ulong _x, ulong _y)
     {
-        Manager_Sound.Instance.Play_SE(SE_INDEX.JUMP);
-        Debug.LogFormat("점프 on");
-        player = _player;
-        moving = true;
+        if (_player == GameManager.position)
+        {
+            Manager_Sound.Instance.Play_SE(SE_INDEX.JUMP);
+            StartCoroutine(MoveCoroutine(_x, _y, _player));
+        }
     }
 
-    void Move_tile()
+    IEnumerator MoveCoroutine(ulong x, ulong y, ushort player)
+    {
+        // 내 캐릭터 이동 함수
+        WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+        moving = true;
+        // 이동 함수 이동 완료 or 번호가 틀리면 코루틴 종료
+        while(!Move_tile(x, y, player))
+        {
+            yield return waitForEndOfFrame;
+        }
+
+        moving = false;
+    }
+
+    bool Move_tile(ulong x, ulong y, ushort player)
     {
         if (GameManager.position == (ulong)player)
         {
@@ -107,14 +125,17 @@ public class PlayerFunction : MonoBehaviour
             if (GameManager.Nowposobj.transform.localPosition ==
                 MatrixManager.Maps[y][x].transform.localPosition)
             {
-                return;
+                return true;
             }
 
             // Sleap 구현을 위해 출발점과 도착점의 센터점을 지정
+            // 윗줄에서 center 선언
+            // Vector3 center = (GameManager.Nowposobj.transform.localPosition + MatrixManager.Maps[y][x].transform.localPosition) * 0.5f;
+
             Vector3 RelCenter = GameManager.Nowposobj.transform.localPosition - center;
             Vector3 aimRelCenter = MatrixManager.Maps[y][x].transform.localPosition - center;
 
-            // 처음 한번만 divide와 startTime을 지정
+            // 처음 한번만 divide와 startTime을 지정해 Time.time이 늘어나면서 fracComplete 변수가 1이 될 때까지 실행(도착 까지)
             if (divide == 0)
             {
                 divide = Vector3.Distance(
@@ -141,15 +162,6 @@ public class PlayerFunction : MonoBehaviour
                 divide = 0;
             }
 
-            //if (t < 1f)
-            //{
-            //    t += 0.04f;
-            //}
-            //else
-            //{
-            //    t = 0f;
-            //}
-
             if (GameManager.mychar.transform.localPosition == MatrixManager.Maps[y][x].transform.localPosition)
             {
                 Manager_Sound.Instance.Play_SE(SE_INDEX.TILE_CHANGE);
@@ -157,27 +169,33 @@ public class PlayerFunction : MonoBehaviour
                 GameManager.mychar.transform.GetChild(1).gameObject.SetActive(false);
                 GameManager.mychar.transform.GetChild(2).gameObject.SetActive(false);
                 GameManager.mychar.transform.GetChild(3).gameObject.SetActive(false);
-
-                moving = false;
                 GameManager.Nowposobj = MatrixManager.Maps[y][x];
                 GameManager.Nowpos = new Vector3(GameManager.Nowposobj.transform.localPosition.x,
                     GameManager.Nowposobj.transform.localPosition.y, GameManager.Nowposobj.transform.localPosition.z);
                 t = 0f;
-                player = -1;
+                //player = -1;
+
+                return true;
             }
         }
+
+        else
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void Update()
     {
-
         if(GameManager.clickpossible)
         {
-            if (moving)
-            {
-                Move_tile();
-            }
-            if(!UIManager.Question.activeSelf/* && !clickcheck*/)
+            //if (moving)
+            //{
+            //    Move_tile();
+            //}
+            if (!UIManager.Question.activeSelf/* && !clickcheck*/)
             {
                 click();
             }
@@ -185,29 +203,28 @@ public class PlayerFunction : MonoBehaviour
     }
     private bool MatrixSelection(RaycastHit2D hit)
     {
-        GameObject[] PossibleMatrix = new GameObject[64];
-        GameObject[] PossibleAllMatrix = new GameObject[64];
-        int[] PossibleNum = new int[64];
-
-        int pm_count = 0;
-        int pam_count = 0;
-        int pn_count = 0;
+        HashSet<int> PossibleNum = new HashSet<int>();
 
         int BlockNum = -1;
 
+        // 현재 캐릭터가 서 있는 블록의 넘버를 가져온다.
         for(int i = 0; i < MatrixManager.arr_height; i++)
         {
+            bool flag = false;
             for(int j = 0; j < MatrixManager.arr_width; j++)
             {
                 if(GameManager.Nowposobj == MatrixManager.Maps[i][j])
                 {
                     BlockNum = MatrixManager.MapMatrix[i][j];
-                    break;
+                    flag = true;
                 }
+                if (flag) break;
             }
+            if (flag) break;
         }
 
-        for(int i = 0; i < MatrixManager.arr_height; i++)           // 클릭 할 수 있는 타일 거르기
+        // 현재 캐릭터의 영역 주위 상하좌우에 있는 영역의 넘버를 해쉬 맵에 삽입.
+        for(int i = 0; i < MatrixManager.arr_height; i++)
         {
             for(int j = 0; j < MatrixManager.arr_width; j++)
             {
@@ -215,71 +232,72 @@ public class PlayerFunction : MonoBehaviour
                 {
                     if(i != MatrixManager.arr_height - 1)
                     {
-                        if(MatrixManager.MapMatrix[i + 1][j] / 100 < 1)
-                        {
-                            PossibleMatrix[pm_count++] = MatrixManager.Maps[i + 1][j];
-                            PossibleNum[pn_count++] = MatrixManager.MapMatrix[i + 1][j];
-                        }
+                        PossibleNum.Add(MatrixManager.MapMatrix[i + 1][j]);
                     }
                     if(i != 0)
                     {
-                        if(MatrixManager.MapMatrix[i - 1][j] / 100 < 1)
-                        {
-                            PossibleMatrix[pm_count++] = MatrixManager.Maps[i - 1][j];
-                            PossibleNum[pn_count++] = MatrixManager.MapMatrix[i - 1][j];
-                        }
+                        PossibleNum.Add(MatrixManager.MapMatrix[i - 1][j]);
                     }
                     if(j != MatrixManager.arr_width - 1)
                     {
-                        if(MatrixManager.MapMatrix[i][j + 1] / 100 < 1)
-                        {
-                            PossibleMatrix[pm_count++] = MatrixManager.Maps[i][j + 1];
-                            PossibleNum[pn_count++] = MatrixManager.MapMatrix[i][j + 1];
-                        }
+                        PossibleNum.Add(MatrixManager.MapMatrix[i][j + 1]);
                     }
                     if(j != 0)
                     {
-                        if(MatrixManager.MapMatrix[i][j - 1] / 100 < 1)
-                        {
-                            PossibleMatrix[pm_count++] = MatrixManager.Maps[i][j - 1];
-                            PossibleNum[pn_count++] = MatrixManager.MapMatrix[i][j - 1];
-                        }
+                        PossibleNum.Add(MatrixManager.MapMatrix[i][j - 1]);
                     }
                 }
             }
         }
 
-        for(int i = 0; i < pn_count; i++)
+        // 클릭한 영역이 내가 갈 수 있는 영역인지 체크
+        for (int i = 0; i < MatrixManager.arr_height; i++)
         {
-            for(int j = 0; j < MatrixManager.arr_height; j++)
+            for (int j = 0; j < MatrixManager.arr_width; j++)
             {
-                for(int k = 0; k < MatrixManager.arr_width; k++)
+                if(hit.collider.transform.parent.gameObject == MatrixManager.Maps[i][j])
                 {
-                    if(PossibleNum[i] == MatrixManager.MapMatrix[j][k])
+                    foreach(int number in PossibleNum)
                     {
-                        PossibleAllMatrix[pam_count++] = MatrixManager.Maps[j][k];
+                        if (MatrixManager.MapMatrix[i][j] == number) return true;
                     }
+                    return false;
                 }
             }
         }
 
+        //// 밟을 수 있는 땅의 넘버인 땅 오브젝트를 모두 배열에 넣는다.
+        //foreach (int number in PossibleNum)
+        //{
+        //    for(int j = 0; j < MatrixManager.arr_height; j++)
+        //    {
+        //        for (int k = 0; k < MatrixManager.arr_width; k++)
+        //        {
+        //            if (number == MatrixManager.MapMatrix[j][k])
+        //            {
+        //                PossibleAllMatrix.Add(MatrixManager.Maps[j][k]);
+        //            }
+        //        }
+        //    }
+        //}
 
-
-        for(int i = 0; i < pam_count; i++)
-        {
-            if(PossibleAllMatrix[i] == hit.collider.transform.parent.gameObject)
-            {
-                return true;
-            }
-        }
+        // 내가 이동하려 하는 땅이 이동 가능한 땅인지 확인
+        //foreach (GameObject Block in PossibleAllMatrix)
+        //{
+        //    if (Block == hit.collider.transform.parent.gameObject)
+        //    {
+        //        return true;
+        //    }
+        //}
 
         return false;
     }
     private RaycastHit2D hit;
     public bool clickcheck = false;
+    bool moving = false;
     private void click()
     {
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && !moving)
         {
             Debug.LogFormat("클릭했다");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -302,7 +320,7 @@ public class PlayerFunction : MonoBehaviour
                 if(MatrixManager.Maps[i][j] == hit.collider.transform.parent.gameObject && MatrixManager.MapMatrix[i][j] != -1)
                 {
                     // 내 소유지 이거나 검출 함수의 true일 경우
-                    if(MatrixManager.MapMatrix[i][j] / 100 == 1 || MatrixSelection(hit))
+                    if(MatrixManager.MapMatrix[i][j] / 100 >= 1 || MatrixSelection(hit))
                     {
                         // 물 종족, 불 종족의 이동 방해 스킬에 영향을 받지 않는가?
                         if (Skill_Check(j))
@@ -313,9 +331,8 @@ public class PlayerFunction : MonoBehaviour
                                 last_x = j;
                                 // 서버에 보낸다.
                                 Sender.Send_Tile_Access((ulong)j, (ulong)i);
-                                //Debug.LogFormat("서버에 보낸다 " + i + "," + j + this.transform.gameObject.name);
-                                y = i;
-                                x = j;
+                                //y = i;
+                                //x = j;
                             }
                         }
                     }

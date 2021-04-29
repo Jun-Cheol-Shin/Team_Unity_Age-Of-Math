@@ -17,18 +17,32 @@ public class SyncManager : MonoBehaviour
         MatrixManager = GameObject.Find("MapMaker").GetComponent<MapMaker>();
     }
 
-    private int player;
-    private ulong x;
-    private ulong y;
-    private bool moving;
+    //private int player;
+    //private ulong x;
+    //private ulong y;
+    //private bool moving;
     private float t;
 
     float startTime;
     float divide = 0;
+    //IEnumerator enumerator;
 
     private void Start()
     {
+        //enumerator = MoveCoroutine();
         Manager_Network.Instance.e_Player_Move.AddListener(new UnityAction<ushort, ulong, ulong>(Jump));
+    }
+
+    IEnumerator MoveCoroutine(ulong x, ulong y, ushort player)
+    {
+        // 상대 캐릭터 이동 함수
+        WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+
+        while (!other_Move_tile(x, y, player))
+        {
+            yield return waitForEndOfFrame;
+        }
+
     }
 
     public void Jump(ushort _player, ulong _x, ulong _y)
@@ -36,15 +50,12 @@ public class SyncManager : MonoBehaviour
         if (_player == GameManager.other_position)
         {
             Manager_Sound.Instance.Play_SE(SE_INDEX.JUMP);
-            Debug.LogFormat("점프 on");
-            player = _player;
-            x = _x;
-            y = _y;
-            moving = true;
+            StartCoroutine(MoveCoroutine(_x, _y, _player));
         }
     }
 
-    void other_Move_tile()
+
+    bool other_Move_tile(ulong x, ulong y, ushort player)
     {
         if (GameManager.other_position == (ulong)player)
         {
@@ -94,7 +105,7 @@ public class SyncManager : MonoBehaviour
             if(GameManager.Nowotherobj.transform.localPosition ==
                 MatrixManager.Maps[y][x].transform.localPosition)
             {
-                return;
+                return true;
             }
 
             Vector3 RelCenter = GameManager.Nowotherobj.transform.localPosition - center;
@@ -139,21 +150,28 @@ public class SyncManager : MonoBehaviour
                 GameManager.otherchar.transform.GetChild(1).gameObject.SetActive(false);
                 GameManager.otherchar.transform.GetChild(2).gameObject.SetActive(false);
                 GameManager.otherchar.transform.GetChild(3).gameObject.SetActive(false);
-
-                moving = false;
                 GameManager.Nowotherobj = MatrixManager.Maps[y][x];
                 GameManager.Nowotherpos = new Vector3(GameManager.Nowotherobj.transform.localPosition.x,
                     GameManager.Nowotherobj.transform.localPosition.y, GameManager.Nowotherobj.transform.localPosition.z);
                 t = 0f;
-                player = -1;
+                //player = -1;
+
+                return true;
             }
         }
-    }
-    private void Update()
-    {
-        if (moving)
+
+        else
         {
-            other_Move_tile();
+            return true;
         }
+
+        return false;
     }
+    //private void Update()
+    //{
+    //    //if (moving)
+    //    //{
+    //    //    other_Move_tile();
+    //    //}
+    //}
 }

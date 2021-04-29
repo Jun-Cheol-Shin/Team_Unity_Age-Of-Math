@@ -115,16 +115,16 @@ public class MapMaker : MonoBehaviour
 
     private void MatrixSetting()
     {
-        // -1 : 장애물 200 : 상대 진영  100 : 내 진영
-
+        // -1 : 장애물 200, 100 플레이들의 영역
+        // 각 플레이어 번호 (1~2) * 100으로 본인의 진영을 파악
         MapMatrix[0][0] = 1;
         MapMatrix[0][1] = 1;
         MapMatrix[0][2] = 2;
         MapMatrix[0][3] = -1;
         MapMatrix[0][4] = -1;
         MapMatrix[0][5] = 4;
-        MapMatrix[0][6] = 200;       // 상대 진영
-        MapMatrix[0][7] = 200;       // 상대 진영
+        MapMatrix[0][6] = 200;
+        MapMatrix[0][7] = 200;
 
         MapMatrix[1][0] = 1;
         MapMatrix[1][1] = 2;
@@ -132,8 +132,8 @@ public class MapMaker : MonoBehaviour
         MapMatrix[1][3] = 2;
         MapMatrix[1][4] = 3;
         MapMatrix[1][5] = 4;
-        MapMatrix[1][6] = 200;       // 상대 진영
-        MapMatrix[1][7] = 200;       // 상대 진영
+        MapMatrix[1][6] = 200;
+        MapMatrix[1][7] = 200;
 
         MapMatrix[2][0] = 1;
         MapMatrix[2][1] = 7;

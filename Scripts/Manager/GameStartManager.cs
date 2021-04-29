@@ -35,6 +35,7 @@ public class GameStartManager : MonoBehaviour
     public GameObject otherchar;
     public GameObject otherEffect;
 
+    // 내 캐릭터 오브젝트와 위치, 상대 캐릭터 오브젝트와 위치
     public GameObject Nowposobj;
     public Vector3 Nowpos;
     public GameObject Nowotherobj;
@@ -62,10 +63,13 @@ public class GameStartManager : MonoBehaviour
         MarkSelect();
     }
 
+    // 내 번호, 상대 플레이어 번호
     public ulong position;
     public ulong other_position;
+
     public ulong my;
     public ulong other;
+
     IEnumerator Count()
     {
         mychar = CharacterCreate(my);
