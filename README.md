@@ -150,7 +150,7 @@ for(int i = 0; i < MatrixManager.arr_height; i++)
     if (flag) break;
 }
 ```
-2. 탐색을 통해 밟을 수 있는 영역의 번호를 HashSet에 삽입해 보관한다. (현재 있는 ㄴ 블록에서 상하좌우로 탐색)
+2. 탐색을 통해 밟을 수 있는 영역의 번호를 HashSet에 삽입해 보관한다. (O 표시한 블록의 번호를 가져온다.)
 ```
 // 현재 캐릭터의 영역 주위 상하좌우에 있는 영역의 넘버를 배열로 받아온다.
 for(int i = 0; i < MatrixManager.arr_height; i++)
